@@ -8,24 +8,26 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { auth } from '../config/firebase';
+
+import { getFirebaseAuth } from '../config/firebase';
 
 export const authService = {
   register: (email: string, password: string) =>
-    createUserWithEmailAndPassword(auth, email, password),
+    createUserWithEmailAndPassword(getFirebaseAuth(), email, password),
 
   login: (email: string, password: string) =>
-    signInWithEmailAndPassword(auth, email, password),
+    signInWithEmailAndPassword(getFirebaseAuth(), email, password),
 
-  logout: () => signOut(auth),
+  logout: () => signOut(getFirebaseAuth()),
 
-  resetPassword: (email: string) => sendPasswordResetEmail(auth, email),
+  resetPassword: (email: string) =>
+    sendPasswordResetEmail(getFirebaseAuth(), email),
 
   googleSignIn: () => {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    return signInWithPopup(getFirebaseAuth(), provider);
   },
 
   onAuthChanged: (callback: (user: User | null) => void) =>
-    onAuthStateChanged(auth, callback),
+    onAuthStateChanged(getFirebaseAuth(), callback),
 };

@@ -1,6 +1,6 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -18,9 +18,9 @@ const firebaseConfigured = Boolean(
   firebaseConfig.appId
 );
 
-let app = null;
-let auth = null;
-let db = null;
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
 
 if (firebaseConfigured) {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
@@ -28,5 +28,23 @@ if (firebaseConfigured) {
   db = getFirestore(app);
 }
 
-export { app, auth, db };
+export const getFirebaseAuth = (): Auth => {
+  if (!auth) {
+    throw new Error(
+      'Firebase Auth is not configured. Check your VITE_FIREBASE_* environment variables.'
+    );
+  }
+  return auth;
+};
+
+export const getFirebaseDb = (): Firestore => {
+  if (!db) {
+    throw new Error(
+      'Firestore is not configured. Check your VITE_FIREBASE_* environment variables.'
+    );
+  }
+  return db;
+};
+
+export { app };
 export default app;

@@ -1,9 +1,18 @@
 import {
-  collection, doc, setDoc, getDoc, getDocs, addDoc,
-  updateDoc, deleteDoc, query, where, orderBy, limit,
-  serverTimestamp, Timestamp,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  query,
+  orderBy,
+  limit,
+  serverTimestamp,
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+
+import { getFirebaseDb } from '../config/firebase';
 
 export interface UserProfile {
   uid: string;
@@ -30,15 +39,23 @@ export interface ContactRequest {
 export interface AIConversation {
   id?: string;
   userId: string;
-  messages: Array<{role: string; content: string; timestamp: string}>;
+  messages: Array<{
+    role: string;
+    content: string;
+    timestamp: string;
+  }>;
   createdAt: any;
   updatedAt: any;
 }
 
 export const firestoreService = {
-  // ── Users ──
-  createUserProfile: async (uid: string, data: Partial<UserProfile>) => {
-    await setDoc(doc(db, 'users', uid), {
+  // ───────────── Users ─────────────
+
+  createUserProfile: async (
+    uid: string,
+    data: Partial<UserProfile>
+  ): Promise<void> => {
+    await setDoc(doc(getFirebaseDb(), 'users', uid), {
       uid,
       name: data.name || '',
       email: data.email || '',
@@ -49,59 +66,135 @@ export const firestoreService = {
     });
   },
 
-  getUserProfile: async (uid: string): Promise<UserProfile | null> => {
-    const snap = await getDoc(doc(db, 'users', uid));
-    return snap.exists() ? (snap.data() as UserProfile) : null;
+  getUserProfile: async (
+    uid: string
+  ): Promise<UserProfile | null> => {
+    const snap = await getDoc(
+      doc(getFirebaseDb(), 'users', uid)
+    );
+
+    return snap.exists()
+      ? (snap.data() as UserProfile)
+      : null;
   },
 
-  updateUserProfile: async (uid: string, data: Partial<UserProfile>) => {
-    await updateDoc(doc(db, 'users', uid), { ...data, lastLogin: serverTimestamp() });
+  updateUserProfile: async (
+    uid: string,
+    data: Partial<UserProfile>
+  ): Promise<void> => {
+    await updateDoc(
+      doc(getFirebaseDb(), 'users', uid),
+      {
+        ...data,
+        lastLogin: serverTimestamp(),
+      }
+    );
   },
 
   getAllUsers: async (): Promise<UserProfile[]> => {
-    const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc')));
-    return snap.docs.map((d) => ({ ...d.data(), uid: d.id } as UserProfile));
+    const snap = await getDocs(
+      query(
+        collection(getFirebaseDb(), 'users'),
+        orderBy('createdAt', 'desc')
+      )
+    );
+
+    return snap.docs.map((d) => ({
+      ...d.data(),
+      uid: d.id,
+    } as UserProfile));
   },
 
-  // ── Contact Requests ──
-  submitContact: async (data: Omit<ContactRequest, 'id' | 'status' | 'createdAt'>) => {
-    return addDoc(collection(db, 'contact_requests'), {
-      ...data,
-      status: 'new',
-      createdAt: serverTimestamp(),
-    });
+  // ───────────── Contact Requests ─────────────
+
+  submitContact: async (
+    data: Omit<ContactRequest, 'id' | 'status' | 'createdAt'>
+  ) => {
+    return addDoc(
+      collection(getFirebaseDb(), 'contact_requests'),
+      {
+        ...data,
+        status: 'new',
+        createdAt: serverTimestamp(),
+      }
+    );
   },
 
   getContactRequests: async (): Promise<ContactRequest[]> => {
-    const snap = await getDocs(query(collection(db, 'contact_requests'), orderBy('createdAt', 'desc')));
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as ContactRequest));
+    const snap = await getDocs(
+      query(
+        collection(getFirebaseDb(), 'contact_requests'),
+        orderBy('createdAt', 'desc')
+      )
+    );
+
+    return snap.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    } as ContactRequest));
   },
 
-  updateContactStatus: async (id: string, status: string) => {
-    await updateDoc(doc(db, 'contact_requests', id), { status });
+  updateContactStatus: async (
+    id: string,
+    status: string
+  ): Promise<void> => {
+    await updateDoc(
+      doc(getFirebaseDb(), 'contact_requests', id),
+      {
+        status,
+      }
+    );
   },
 
-  // ── AI Conversations ──
-  saveAIConversation: async (userId: string, messages: any[]) => {
-    return addDoc(collection(db, 'ai_conversations'), {
-      userId,
-      messages,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+  // ───────────── AI Conversations ─────────────
+
+  saveAIConversation: async (
+    userId: string,
+    messages: any[]
+  ) => {
+    return addDoc(
+      collection(getFirebaseDb(), 'ai_conversations'),
+      {
+        userId,
+        messages,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }
+    );
   },
 
   getAIConversations: async (): Promise<AIConversation[]> => {
-    const snap = await getDocs(query(collection(db, 'ai_conversations'), orderBy('createdAt', 'desc'), limit(100)));
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as AIConversation));
+    const snap = await getDocs(
+      query(
+        collection(getFirebaseDb(), 'ai_conversations'),
+        orderBy('createdAt', 'desc'),
+        limit(100)
+      )
+    );
+
+    return snap.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    } as AIConversation));
   },
 
-  // ── Activity Log ──
-  logActivity: async (userId: string, action: string, details: string = '') => {
+  // ───────────── Activity Log ─────────────
+
+  logActivity: async (
+    userId: string,
+    action: string,
+    details: string = ''
+  ): Promise<void> => {
     try {
-      await addDoc(collection(db, 'activity_logs'), {
-        userId, action, details, createdAt: serverTimestamp(),
-      });
+      await addDoc(
+        collection(getFirebaseDb(), 'activity_logs'),
+        {
+          userId,
+          action,
+          details,
+          createdAt: serverTimestamp(),
+        }
+      );
     } catch (e) {
       console.warn('Activity log failed:', e);
     }
