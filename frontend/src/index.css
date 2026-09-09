@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  /* Neutral palette — warm off-white foundation */
+  --color-surface: #FAFAF8;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-hover: #F5F5F3;
+  --color-surface-muted: #F0F0EE;
+
+  /* Text hierarchy */
+  --color-primary: #171717;
+  --color-secondary: #6B7280;
+  --color-tertiary: #9CA3AF;
+  --color-inverse: #FFFFFF;
+
+  /* Borders */
+  --color-border: #E8E8E6;
+  --color-border-strong: #D4D4D2;
+
+  /* Accent — deep professional green */
+  --color-accent: #0D6E4F;
+  --color-accent-hover: #0B5E43;
+  --color-accent-light: #ECFDF3;
+  --color-accent-muted: #D1FAE5;
+
+  /* Semantic */
+  --color-success-50: #ECFDF5;
+  --color-success-100: #D1FAE5;
+  --color-success-500: #059669;
+  --color-success-600: #047857;
+  --color-warning-50: #FFFBEB;
+  --color-warning-100: #FEF3C7;
+  --color-warning-500: #D97706;
+  --color-warning-600: #B45309;
+  --color-danger-50: #FEF2F2;
+  --color-danger-100: #FEE2E2;
+  --color-danger-500: #DC2626;
+  --color-danger-600: #B91C1C;
+
+  /* Legacy aliases for components that still reference old tokens */
+  --color-navy-50: #F5F5F3;
+  --color-navy-100: #E8E8E6;
+  --color-navy-200: #D4D4D2;
+  --color-navy-300: #9CA3AF;
+  --color-navy-400: #6B7280;
+  --color-navy-500: #4B5563;
+  --color-navy-600: #374151;
+  --color-navy-700: #2D2D2D;
+  --color-navy-800: #1F1F1F;
+  --color-navy-900: #171717;
+  --color-navy-950: #0A0A0A;
+  --color-saffron-50: #ECFDF3;
+  --color-saffron-100: #D1FAE5;
+  --color-saffron-200: #A7F3D0;
+  --color-saffron-300: #6EE7B7;
+  --color-saffron-400: #0D6E4F;
+  --color-saffron-500: #0D6E4F;
+  --color-saffron-600: #0B5E43;
+  --color-success-200: #A7F3D0;
+  --color-success-400: #34D399;
+  --color-danger-400: #F87171;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Fix Leaflet map tiles broken by Tailwind v4 img reset */
+  .leaflet-container img {
+    max-width: none !important;
+    max-height: none !important;
+  }
+  .leaflet-container {
+    z-index: 0;
+  }
+
+  /* Smooth focus rings */
+  *:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  .heading-tight {
+    letter-spacing: -0.01em;
+  }
+}
