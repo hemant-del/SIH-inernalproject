@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 // Helper to handle responses consistently
 async function handleResponse(res: Response) {
