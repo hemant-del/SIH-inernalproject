@@ -1,5 +1,7 @@
-// Production API is provided by Vercel's VITE_API_URL environment variable.
-const API_BASE = 'https://sih-inernalproject.onrender.com/api';
+// API base URL: respects VITE_API_URL, uses Vite /api proxy in dev, and falls back to Render in prod
+export const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? '/api' : 'https://sih-inernalproject.onrender.com/api');
 // Helper to handle responses consistently
 async function handleResponse(res: Response) {
   if (!res.ok) {

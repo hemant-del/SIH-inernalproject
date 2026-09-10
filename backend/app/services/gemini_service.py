@@ -9,7 +9,7 @@ class GeminiService:
     def __init__(self):
         if settings.GOOGLE_API_KEY:
             genai.configure(api_key=settings.GOOGLE_API_KEY)
-            self.model = genai.GenerativeModel('gemini-3.6-flash')
+            self.model = genai.GenerativeModel('gemini-1.5-flash')
         else:
             self.model = None
 
