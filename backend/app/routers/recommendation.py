@@ -20,7 +20,13 @@ async def recommend_schemes(user_input: UserProfileInput, db: AsyncSession = Dep
     eligible, ineligible = check_all_schemes(user_profile, schemes)
     
     eligible_schemes_full = [s for s in schemes if any(e['scheme_id'] == s['id'] for e in eligible)]
-    ranked = rank_schemes(user_profile, eligible_schemes_full, schemes)
+    if not eligible_schemes_full:
+        from app.services.eligibility_engine import is_purpose_match
+        purpose_matches = [s for s in schemes if is_purpose_match(user_profile.get('purpose', ''), s.get('eligible_purposes', []))]
+        fallback_schemes = purpose_matches if purpose_matches else schemes
+        ranked = rank_schemes(user_profile, fallback_schemes, schemes)
+    else:
+        ranked = rank_schemes(user_profile, eligible_schemes_full, schemes)
     
     return {
         "recommendations": ranked,
