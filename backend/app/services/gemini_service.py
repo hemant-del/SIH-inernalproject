@@ -9,7 +9,7 @@ class GeminiService:
     def __init__(self):
         if settings.GOOGLE_API_KEY:
             genai.configure(api_key=settings.GOOGLE_API_KEY)
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
+            self.model = genai.GenerativeModel('gemini-3.6-flash')
         else:
             self.model = None
 
@@ -127,16 +127,10 @@ Number between 0 and 1.
 
         try:
             response = self.model.generate_content(prompt)
-
-            content = (
-                response.text
-                .replace("```json", "")
-                .replace("```", "")
-                .strip()
-            )
-
-            result = json.loads(content)
-
+            raw_text = response.text.strip()
+            json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+            content = json_match.group(0) if json_match else raw_text.replace("```json", "").replace("```", "").strip()
+            result = json.loads(content, strict=False)
             return result
 
         except Exception as e:
@@ -217,15 +211,10 @@ Number between 0 and 1.
 
         try:
             response = self.model.generate_content(prompt)
-
-            content = (
-                response.text
-                .replace('```json', '')
-                .replace('```', '')
-                .strip()
-            )
-
-            return json.loads(content)
+            raw_text = response.text.strip()
+            json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
+            content = json_match.group(0) if json_match else raw_text.replace("```json", "").replace("```", "").strip()
+            return json.loads(content, strict=False)
 
         except Exception as e:
             print(f"Project Report Error: {str(e)}")
