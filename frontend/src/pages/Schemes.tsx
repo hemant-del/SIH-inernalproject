@@ -12,8 +12,8 @@ export default function Schemes() {
 
   useEffect(() => {
     api.getSchemes()
-      .then((data: any[]) => {
-        setSchemes(data);
+      .then((data: any) => {
+        setSchemes(Array.isArray(data) ? data : (data?.schemes || []));
         setLoading(false);
       })
       .catch((err: Error) => {
